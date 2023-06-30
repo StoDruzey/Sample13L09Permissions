@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.sample13l09permissions.databinding.FragmentSecondBinding
+import coil.load
+import com.example.sample13l09permissions.databinding.FragmentFirstBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,15 +16,16 @@ import retrofit2.create
 
 class FirstFragment : Fragment() {
 
-    private var _binding: FragmentSecondBinding? = null
-    private val binding: FragmentSecondBinding get() = requireNotNull(_binding)
+    private var _binding: FragmentFirstBinding? = null
+    private val binding get() = requireNotNull(_binding)
+    private var currentRequest: Call<List<User>>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentSecondBinding.inflate(inflater, container, false)
+        return FragmentFirstBinding.inflate(inflater, container, false)
             .also { _binding = it }
             .root
     }
@@ -37,22 +39,29 @@ class FirstFragment : Fragment() {
             .build()
 
         val githubInterface = retrofit.create<GithubInterface>()
-        githubInterface
+        currentRequest = githubInterface
             .getUsers()
-            .enqueue(object : Callback<List<User>>{
+            .apply {
+                enqueue(object : Callback<List<User>>{
                 override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                    println()
+                    if (response.isSuccessful) {
+                        val users = response.body() ?: return
+                        binding.imageView.load(users[0].avatarUrl)
+
+                    }
                 }
 
                 override fun onFailure(call: Call<List<User>>, t: Throwable) {
                     println()
                 }
             })
+            }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
+        currentRequest?.cancel()
         _binding = null
     }
 }
