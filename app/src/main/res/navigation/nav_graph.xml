@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_host"
+    app:startDestination="@id/fragment_first">
+
+    <fragment
+        android:id="@+id/fragment_first"
+        android:name="com.example.sample13l09permissions.FirstFragment"
+        tools:layout="@layout/fragment_first"/>
+
+</navigation>
