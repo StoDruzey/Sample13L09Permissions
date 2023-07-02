@@ -9,6 +9,7 @@ import coil.load
 import com.example.sample13l09permissions.databinding.FragmentFirstBinding
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -43,18 +44,19 @@ class FirstFragment : Fragment() {
             .getUsers()
             .apply {
                 enqueue(object : Callback<List<User>>{
-                override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                    if (response.isSuccessful) {
-                        val users = response.body() ?: return
-                        binding.imageView.load(users[0].avatarUrl)
-
+                    override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                        if (response.isSuccessful) {
+                            val users = response.body() ?: return
+                            binding.imageView.load(users[0].avatarUrl)
+                        } else {
+                            HttpException(response).message()
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                    println()
-                }
-            })
+                    override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                        println()
+                    }
+                })
             }
     }
 
