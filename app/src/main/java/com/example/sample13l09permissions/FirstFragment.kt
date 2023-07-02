@@ -49,12 +49,14 @@ class FirstFragment : Fragment() {
                             val users = response.body() ?: return
                             binding.imageView.load(users[0].avatarUrl)
                         } else {
-                            HttpException(response).message()
+                            handleException(HttpException(response))
                         }
                     }
 
                     override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                        println()
+                        if (!call.isCanceled) {
+                            handleException(t)
+                        }
                     }
                 })
             }
@@ -65,5 +67,9 @@ class FirstFragment : Fragment() {
 
         currentRequest?.cancel()
         _binding = null
+    }
+
+    private fun handleException(e: Throwable) {
+
     }
 }
