@@ -41,7 +41,7 @@ class FirstFragment : Fragment() {
 
         val githubInterface = retrofit.create<GithubInterface>()
         currentRequest = githubInterface
-            .getUsers()
+            .getUsers(50, 10)
             .apply {
                 enqueue(object : Callback<List<User>>{
                     override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
