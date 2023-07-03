@@ -20,6 +20,7 @@ class FirstFragment : Fragment() {
     private var _binding: FragmentFirstBinding? = null
     private val binding get() = requireNotNull(_binding)
     private var currentRequest: Call<List<User>>? = null
+    private var user_number: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,26 +41,29 @@ class FirstFragment : Fragment() {
             .build()
 
         val githubInterface = retrofit.create<GithubInterface>()
-        currentRequest = githubInterface
-            .getUsers(50, 10)
-            .apply {
-                enqueue(object : Callback<List<User>>{
-                    override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                        if (response.isSuccessful) {
-                            val users = response.body() ?: return
-                            binding.imageView.load(users[0].avatarUrl)
-                        } else {
-                            handleException(HttpException(response))
+        binding.button.setOnClickListener {
+            user_number++
+            currentRequest = githubInterface
+                .getUsers(50, 10)
+                .apply {
+                    enqueue(object : Callback<List<User>>{
+                        override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                            if (response.isSuccessful) {
+                                val users = response.body() ?: return
+                                binding.imageView.load(users[user_number].avatarUrl)
+                            } else {
+                                handleException(HttpException(response))
+                            }
                         }
-                    }
 
-                    override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                        if (!call.isCanceled) {
-                            handleException(t)
+                        override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                            if (!call.isCanceled) {
+                                handleException(t)
+                            }
                         }
-                    }
-                })
-            }
+                    })
+                }
+        }
     }
 
     override fun onDestroyView() {
